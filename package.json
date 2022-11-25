@@ -1,0 +1,26 @@
+{
+  "name": "logseq-plugin-weather",
+  "version": "0.1.0",
+  "description": "Query openweathermap.org API for weather data and write it to your logseq graph",
+  "main": "dist/index.html",
+  "targets": {
+    "main": false
+  },
+  "scripts": {
+    "build": "parcel build src/index.html --public-url ./"
+  },
+  "keywords": [],
+  "author": "axelav",
+  "license": "ISC",
+  "dependencies": {
+    "@logseq/libs": "^0.0.10"
+  },
+  "logseq": {
+    "id": "logseq-plugin-weather",
+    "title": "Weather",
+    "icon": "./icon.png"
+  },
+  "devDependencies": {
+    "parcel": "^2.7.0"
+  }
+}
