@@ -22,5 +22,8 @@
   },
   "devDependencies": {
     "parcel": "^2.7.0"
+  },
+  "volta": {
+    "node": "18.12.1"
   }
 }
