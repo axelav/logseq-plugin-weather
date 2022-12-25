@@ -1,5 +1,8 @@
 import '@logseq/libs'
-import { BlockIdentity } from '@logseq/libs/dist/LSPlugin.user'
+import {
+  BlockIdentity,
+  SettingSchemaDesc,
+} from '@logseq/libs/dist/LSPlugin.user'
 
 // TODO
 // - use geolocation API?
@@ -12,6 +15,17 @@ interface Coordinates {
   latitude: string
   longitude: string
 }
+
+let settings: SettingSchemaDesc[] = [
+  {
+    key: 'localCoordinates',
+    type: 'string',
+    title: 'Local Coordinates',
+    description:
+      "Set your local coordinates in the format 'latitude, longitude'",
+    default: '44.590959, -104.698514',
+  },
+]
 
 const parseQuery = (query: string) => {
   if (!query) {
@@ -51,7 +65,7 @@ interface WeatherResponse {
 const runPlugin = async (e: { uuid: string }) => {
   const query = (await logseq.Editor.getBlock(e.uuid))?.content.split('\n')[0]
 
-  const coords = parseQuery(query)
+  const coords = parseQuery(query || logseq.settings?.localCoordinates)
 
   if (!coords) {
     return logseq.UI.showMsg(
@@ -151,6 +165,8 @@ const writeWeatherData = async (
 
 const main = () => {
   console.log('logseq-weather-plugin :: Loaded!')
+
+  logseq.useSettingsSchema(settings)
 
   logseq.Editor.registerBlockContextMenuItem(
     'Add current weather data',
