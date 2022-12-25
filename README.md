@@ -18,6 +18,12 @@ Writes current weather data for:
 
 ## Usage
 
+### Add default local coordinates in plugin settings
+
+Must be in the format 'latitude, longitude', eg. `28.580573, -81.351803`
+
+![settings](./settings.jpg)
+
 ### Add current local weather data to graph
 
 - Create an empty block.
