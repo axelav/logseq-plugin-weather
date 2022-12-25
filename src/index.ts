@@ -7,10 +7,6 @@ import {
 // TODO
 // - use geolocation API?
 
-// FIXME: user config defaults
-const DEFAULT_LATITUDE = '40.671082'
-const DEFAULT_LONGITUDE = '-73.951625'
-
 interface Coordinates {
   latitude: string
   longitude: string
@@ -28,11 +24,8 @@ let settings: SettingSchemaDesc[] = [
 ]
 
 const parseQuery = (query: string) => {
-  if (!query) {
-    return {
-      latitude: DEFAULT_LATITUDE,
-      longitude: DEFAULT_LONGITUDE,
-    }
+  if (!query.trim()) {
+    return
   }
 
   const [latitude, longitude] = query.split(',')
@@ -83,7 +76,6 @@ const runPlugin = async (e: { uuid: string }) => {
 
     writeWeatherData(weatherResponse, e.uuid)
 
-    // TODO: ?? Delete the original block if it contained a pair of coords
     if (query) {
       await logseq.Editor.removeBlock(e.uuid)
     }
