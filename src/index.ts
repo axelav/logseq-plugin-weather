@@ -28,6 +28,16 @@ let settings: SettingSchemaDesc[] = [
     description: 'Attempt to find nearest municipalities.',
     default: true,
   },
+  {
+    key: 'units',
+    type: 'enum',
+    title: 'Units',
+    description:
+      'Choose imperial (Fahrenheit, miles per hour) or metric (Celsius, meter per second).',
+    enumChoices: ['imperial', 'metric'],
+    enumPicker: 'select',
+    default: ['imperial'],
+  },
 ]
 
 const parseQuery = (query: string) => {
@@ -93,8 +103,10 @@ const runPlugin = async (e: { uuid: string }) => {
 
 const getWeatherData = async ({ latitude, longitude }: Coordinates) => {
   try {
+    const units = logseq.settings?.units === 'metric' ? '&metric=t' : ''
+
     const res = await fetch(
-      `https://weather-api.honkytonkin.workers.dev?lat=${latitude}&lon=${longitude}`
+      `https://weather-api.honkytonkin.workers.dev?lat=${latitude}&lon=${longitude}${units}`
     )
 
     if (!res.ok) {
