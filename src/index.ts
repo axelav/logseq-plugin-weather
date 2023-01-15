@@ -21,6 +21,13 @@ let settings: SettingSchemaDesc[] = [
       "Set your local coordinates in the format 'latitude, longitude'",
     default: '44.590959, -104.698514',
   },
+  {
+    key: 'includeLocation',
+    type: 'boolean',
+    title: 'Include location?',
+    description: 'Attempt to find nearest municipalities.',
+    default: true,
+  },
 ]
 
 const parseQuery = (query: string) => {
@@ -118,39 +125,44 @@ const writeWeatherData = async (
     location,
   } = weatherResponse
 
+  const children = [
+    {
+      content: `forecast:: ${forecast}`,
+    },
+    {
+      content: `temperature:: ${temperature}`,
+    },
+    {
+      content: `humidity:: ${humidity}`,
+    },
+    {
+      content: `wind:: ${wind}`,
+    },
+    {
+      content: `sun:: ${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
+        sunset
+      )}`,
+    },
+    {
+      content: `moon:: ${toLocaleTimeString(moonrise)} / ${toLocaleTimeString(
+        moonset
+      )}`,
+    },
+  ]
+
+  if (logseq.settings?.includeLocation) {
+    children.push({
+      content: `location:: ${location
+        .split(',')
+        .map((s) => `[[${s.trim()}]]`)
+        .join(', ')}`,
+    })
+  }
+
   await logseq.Editor.insertBatchBlock(srcBlock, [
     {
       content: '[[Daily Weather]]',
-      children: [
-        {
-          content: `forecast:: ${forecast}`,
-        },
-        {
-          content: `temperature:: ${temperature}`,
-        },
-        {
-          content: `humidity:: ${humidity}`,
-        },
-        {
-          content: `wind:: ${wind}`,
-        },
-        {
-          content: `sun:: ${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
-            sunset
-          )}`,
-        },
-        {
-          content: `moon:: ${toLocaleTimeString(
-            moonrise
-          )} / ${toLocaleTimeString(moonset)}`,
-        },
-        {
-          content: `location:: ${location
-            .split(',')
-            .map((s) => `[[${s.trim()}]]`)
-            .join(', ')}`,
-        },
-      ],
+      children,
     },
   ])
 }
