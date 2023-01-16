@@ -22,10 +22,6 @@ Writes current weather data for:
 
 Must be in the format 'latitude, longitude', eg. `28.580573, -81.351803`
 
-Other options include preferring metric units over imperial and excluding various fields (location, sun, moon, wind, and humidity) from the output.
-
-![settings](./settings.jpg)
-
 ### Add current local weather data to graph
 
 - Create an empty block.
@@ -39,3 +35,9 @@ Other options include preferring metric units over imperial and excluding variou
 - Select "Add current weather data" from the block's context menu (right-click the block bullet).
 
 ![screencast](./screencast2.gif)
+
+### Settings
+
+Other settings include preferring metric units over imperial and excluding various fields (location, sun, moon, wind, and humidity) from the output.
+
+![settings](./settings.jpg)
