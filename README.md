@@ -22,7 +22,7 @@ Writes current weather data for:
 
 Must be in the format 'latitude, longitude', eg. `28.580573, -81.351803`
 
-Other options include preferring metric units over imperial and excluding the location from the output.
+Other options include preferring metric units over imperial and excluding various fields (location, sun, moon, wind, and humidity) from the output.
 
 ![settings](./settings.jpg)
 

@@ -22,21 +22,50 @@ let settings: SettingSchemaDesc[] = [
     default: '44.590959, -104.698514',
   },
   {
+    key: 'units',
+    type: 'enum',
+    title: 'Units',
+    description:
+      'Choose imperial (Fahrenheit, miles per hour) or metric (Celsius, meters per second).',
+    enumChoices: ['imperial', 'metric'],
+    enumPicker: 'select',
+    default: ['imperial'],
+  },
+  {
     key: 'includeLocation',
     type: 'boolean',
     title: 'Include location?',
     description: 'Attempt to find nearest municipalities.',
     default: true,
   },
+
   {
-    key: 'units',
-    type: 'enum',
-    title: 'Units',
-    description:
-      'Choose imperial (Fahrenheit, miles per hour) or metric (Celsius, meter per second).',
-    enumChoices: ['imperial', 'metric'],
-    enumPicker: 'select',
-    default: ['imperial'],
+    key: 'includeSun',
+    type: 'boolean',
+    title: 'Include sunrise and sunset?',
+    description: 'Add sunrise and sunset data to the output.',
+    default: true,
+  },
+  {
+    key: 'includeMoon',
+    type: 'boolean',
+    title: 'Include moonrise and moonset?',
+    description: 'Add moonrise and moonset data to the output.',
+    default: true,
+  },
+  {
+    key: 'includeWind',
+    type: 'boolean',
+    title: 'Include wind speed?',
+    description: 'Add wind speed data to the output.',
+    default: true,
+  },
+  {
+    key: 'includeHumidity',
+    type: 'boolean',
+    title: 'Include humidity?',
+    description: 'Add humidity data to the output.',
+    default: true,
   },
 ]
 
@@ -144,23 +173,35 @@ const writeWeatherData = async (
     {
       content: `temperature:: ${temperature}`,
     },
-    {
+  ]
+
+  if (logseq.settings?.includeHumidity) {
+    children.push({
       content: `humidity:: ${humidity}`,
-    },
-    {
+    })
+  }
+
+  if (logseq.settings?.includeWind) {
+    children.push({
       content: `wind:: ${wind}`,
-    },
-    {
+    })
+  }
+
+  if (logseq.settings?.includeSun) {
+    children.push({
       content: `sun:: ${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
         sunset
       )}`,
-    },
-    {
+    })
+  }
+
+  if (logseq.settings?.includeMoon) {
+    children.push({
       content: `moon:: ${toLocaleTimeString(moonrise)} / ${toLocaleTimeString(
         moonset
       )}`,
-    },
-  ]
+    })
+  }
 
   if (logseq.settings?.includeLocation) {
     children.push({
