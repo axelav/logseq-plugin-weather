@@ -67,6 +67,13 @@ let settings: SettingSchemaDesc[] = [
     description: 'Add humidity data to the output.',
     default: true,
   },
+  {
+    key: 'enableSlashCommand',
+    type: 'boolean',
+    title: 'Enable slash command?',
+    description: 'Enable the "Add current weather data" slash command.',
+    default: true,
+  },
 ]
 
 const parseQuery = (query: string) => {
@@ -232,6 +239,17 @@ const main = () => {
       await runPlugin(e)
     }
   )
+
+  if (logseq.settings?.enableSlashCommand) {
+    logseq.Editor.registerSlashCommand('Add current weather data', async () => {
+      console.log('logseq-weather-plugin :: Fetching results...')
+      const e = await logseq.Editor.getCurrentBlock()
+
+      if (e) {
+        await runPlugin(e)
+      }
+    })
+  }
 }
 
 logseq.ready(main).catch(console.error)
