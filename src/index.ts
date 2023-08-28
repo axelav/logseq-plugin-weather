@@ -142,7 +142,7 @@ const getWeatherData = async ({ latitude, longitude }: Coordinates) => {
     const units = logseq.settings?.units === 'metric' ? '&metric=t' : ''
 
     const res = await fetch(
-      `https://weather-api.honkytonkin.workers.dev?lat=${latitude}&lon=${longitude}${units}`
+      `https://endpoints.deno.dev/weather?lat=${latitude}&lon=${longitude}${units}`
     )
 
     if (!res.ok) {
