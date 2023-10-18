@@ -14,6 +14,14 @@ interface Coordinates {
 
 let settings: SettingSchemaDesc[] = [
   {
+    key: 'useSingleBlock',
+    type: 'boolean',
+    title: 'Use a single block for output?',
+    description:
+      'Write all output to a single block instead of one for each property.',
+    default: false,
+  },
+  {
     key: 'localCoordinates',
     type: 'string',
     title: 'Local Coordinates',
@@ -173,58 +181,80 @@ const writeWeatherData = async (
     location,
   } = weatherResponse
 
-  const children = [
-    {
-      content: `forecast:: ${forecast}`,
-    },
-    {
-      content: `temperature:: ${temperature}`,
-    },
-  ]
+  const sunStr = `${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
+    sunset
+  )}`
+  const moonStr = `${toLocaleTimeString(moonrise)} / ${toLocaleTimeString(
+    moonset
+  )}`
+  const locationStr = location
+    .split(',')
+    .map((s) => `[[${s.trim()}]]`)
+    .join(', ')
 
-  if (logseq.settings?.includeHumidity) {
-    children.push({
-      content: `humidity:: ${humidity}`,
-    })
+  if (logseq.settings?.useSingleBlock) {
+    const content = `[[Daily Weather]]\nforecast:: ${forecast}\ntemperature:: ${temperature}`
+
+    if (logseq.settings?.includeHumidity) {
+      content.concat(`\nhumidity:: ${humidity}`)
+    } else if (logseq.settings?.includeWind) {
+      content.concat(`\nwind:: ${wind}`)
+    } else if (logseq.settings?.includeSun) {
+      content.concat(`\nsun:: ${sunStr}`)
+    } else if (logseq.settings?.includeMoon) {
+      content.concat(`\nmoon:: ${moonStr}`)
+    } else if (logseq.settings?.includeLocation) {
+      content.concat(`\nlocation:: ${locationStr}`)
+    }
+
+    await logseq.Editor.updateBlock(srcBlock, content)
+  } else {
+    const children = [
+      {
+        content: `forecast:: ${forecast}`,
+      },
+      {
+        content: `temperature:: ${temperature}`,
+      },
+    ]
+
+    if (logseq.settings?.includeHumidity) {
+      children.push({
+        content: `humidity:: ${humidity}`,
+      })
+    }
+
+    if (logseq.settings?.includeWind) {
+      children.push({
+        content: `wind:: ${wind}`,
+      })
+    }
+
+    if (logseq.settings?.includeSun) {
+      children.push({
+        content: `sun:: ${sunStr}`,
+      })
+    }
+
+    if (logseq.settings?.includeMoon) {
+      children.push({
+        content: `moon:: ${moonStr}`,
+      })
+    }
+
+    if (logseq.settings?.includeLocation) {
+      children.push({
+        content: `location:: ${locationStr}`,
+      })
+    }
+
+    await logseq.Editor.insertBatchBlock(srcBlock, [
+      {
+        content: '[[Daily Weather]]',
+        children,
+      },
+    ])
   }
-
-  if (logseq.settings?.includeWind) {
-    children.push({
-      content: `wind:: ${wind}`,
-    })
-  }
-
-  if (logseq.settings?.includeSun) {
-    children.push({
-      content: `sun:: ${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
-        sunset
-      )}`,
-    })
-  }
-
-  if (logseq.settings?.includeMoon) {
-    children.push({
-      content: `moon:: ${toLocaleTimeString(moonrise)} / ${toLocaleTimeString(
-        moonset
-      )}`,
-    })
-  }
-
-  if (logseq.settings?.includeLocation) {
-    children.push({
-      content: `location:: ${location
-        .split(',')
-        .map((s) => `[[${s.trim()}]]`)
-        .join(', ')}`,
-    })
-  }
-
-  await logseq.Editor.insertBatchBlock(srcBlock, [
-    {
-      content: '[[Daily Weather]]',
-      children,
-    },
-  ])
 }
 
 const main = () => {
