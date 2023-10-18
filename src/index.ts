@@ -193,18 +193,26 @@ const writeWeatherData = async (
     .join(', ')
 
   if (logseq.settings?.useSingleBlock) {
-    const content = `[[Daily Weather]]\nforecast:: ${forecast}\ntemperature:: ${temperature}`
+    let content = `[[Daily Weather]]\nforecast:: ${forecast}\ntemperature:: ${temperature}`
 
     if (logseq.settings?.includeHumidity) {
-      content.concat(`\nhumidity:: ${humidity}`)
-    } else if (logseq.settings?.includeWind) {
-      content.concat(`\nwind:: ${wind}`)
-    } else if (logseq.settings?.includeSun) {
-      content.concat(`\nsun:: ${sunStr}`)
-    } else if (logseq.settings?.includeMoon) {
-      content.concat(`\nmoon:: ${moonStr}`)
-    } else if (logseq.settings?.includeLocation) {
-      content.concat(`\nlocation:: ${locationStr}`)
+      content = content.concat(`\nhumidity:: ${humidity}`)
+    }
+
+    if (logseq.settings?.includeWind) {
+      content = content.concat(`\nwind:: ${wind}`)
+    }
+
+    if (logseq.settings?.includeSun) {
+      content = content.concat(`\nsun:: ${sunStr}`)
+    }
+
+    if (logseq.settings?.includeMoon) {
+      content = content.concat(`\nmoon:: ${moonStr}`)
+    }
+
+    if (logseq.settings?.includeLocation) {
+      content = content.concat(`\nlocation:: ${locationStr}`)
     }
 
     await logseq.Editor.updateBlock(srcBlock, content)
