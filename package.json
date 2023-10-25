@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-weather",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Query openweathermap.org API for weather data and write it to your logseq graph",
   "main": "dist/index.html",
   "targets": {
