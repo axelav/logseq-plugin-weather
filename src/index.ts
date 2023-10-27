@@ -124,7 +124,7 @@ const runPlugin = async (e: { uuid: string }) => {
   if (!coords) {
     return logseq.UI.showMsg(
       'logseq-weather-plugin :: Could not parse latitude and longitude from block!',
-      'error'
+      'error',
     )
   }
 
@@ -137,7 +137,7 @@ const runPlugin = async (e: { uuid: string }) => {
 
     writeWeatherData(weatherResponse, e.uuid)
 
-    if (query) {
+    if (query && !logseq.settings?.useSingleBlock) {
       await logseq.Editor.removeBlock(e.uuid)
     }
   } catch (err) {
@@ -150,7 +150,7 @@ const getWeatherData = async ({ latitude, longitude }: Coordinates) => {
     const units = logseq.settings?.units === 'metric' ? '&metric=t' : ''
 
     const res = await fetch(
-      `https://endpoints.deno.dev/weather?lat=${latitude}&lon=${longitude}${units}`
+      `https://endpoints.deno.dev/weather?lat=${latitude}&lon=${longitude}${units}`,
     )
 
     if (!res.ok) {
@@ -167,7 +167,7 @@ const getWeatherData = async ({ latitude, longitude }: Coordinates) => {
 
 const writeWeatherData = async (
   weatherResponse: WeatherResponse,
-  srcBlock: BlockIdentity
+  srcBlock: BlockIdentity,
 ) => {
   const {
     forecast,
@@ -182,10 +182,10 @@ const writeWeatherData = async (
   } = weatherResponse
 
   const sunStr = `${toLocaleTimeString(sunrise)} / ${toLocaleTimeString(
-    sunset
+    sunset,
   )}`
   const moonStr = `${toLocaleTimeString(moonrise)} / ${toLocaleTimeString(
-    moonset
+    moonset,
   )}`
   const locationStr = location
     .split(',')
@@ -275,7 +275,7 @@ const main = () => {
     async (e) => {
       console.log('logseq-weather-plugin :: Fetching results...')
       await runPlugin(e)
-    }
+    },
   )
 
   if (logseq.settings?.enableSlashCommand) {
