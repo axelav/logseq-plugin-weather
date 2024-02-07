@@ -1,8 +1,8 @@
-import "@logseq/libs";
+import '@logseq/libs';
 import {
   BlockIdentity,
   SettingSchemaDesc,
-} from "@logseq/libs/dist/LSPlugin.user";
+} from '@logseq/libs/dist/LSPlugin.user';
 
 // TODO
 // - use geolocation API?
@@ -14,78 +14,78 @@ interface Coordinates {
 
 let settings: SettingSchemaDesc[] = [
   {
-    key: "useSingleBlock",
-    type: "boolean",
-    title: "Use a single block for output?",
+    key: 'useSingleBlock',
+    type: 'boolean',
+    title: 'Use a single block for output?',
     description:
-      "Write all output to a single block instead of one for each property.",
+      'Write all output to a single block instead of one for each property.',
     default: false,
   },
   {
-    key: "localCoordinates",
-    type: "string",
-    title: "Local Coordinates",
+    key: 'localCoordinates',
+    type: 'string',
+    title: 'Local Coordinates',
     description:
       "Set your local coordinates in the format 'latitude, longitude'",
-    default: "44.590959, -104.698514",
+    default: '44.590959, -104.698514',
   },
   {
-    key: "units",
-    type: "enum",
-    title: "Units",
+    key: 'units',
+    type: 'enum',
+    title: 'Units',
     description:
-      "Choose imperial (Fahrenheit, miles per hour) or metric (Celsius, meters per second).",
-    enumChoices: ["imperial", "metric"],
-    enumPicker: "select",
-    default: ["imperial"],
+      'Choose imperial (Fahrenheit, miles per hour) or metric (Celsius, meters per second).',
+    enumChoices: ['imperial', 'metric'],
+    enumPicker: 'select',
+    default: ['imperial'],
   },
   {
-    key: "includeLocation",
-    type: "boolean",
-    title: "Include location?",
-    description: "Attempt to find nearest municipalities.",
+    key: 'includeLocation',
+    type: 'boolean',
+    title: 'Include location?',
+    description: 'Attempt to find nearest municipalities.',
     default: true,
   },
 
   {
-    key: "includeSun",
-    type: "boolean",
-    title: "Include sunrise and sunset?",
-    description: "Add sunrise and sunset data to the output.",
+    key: 'includeSun',
+    type: 'boolean',
+    title: 'Include sunrise and sunset?',
+    description: 'Add sunrise and sunset data to the output.',
     default: true,
   },
   {
-    key: "includeMoon",
-    type: "boolean",
-    title: "Include moonrise and moonset?",
-    description: "Add moonrise and moonset data to the output.",
+    key: 'includeMoon',
+    type: 'boolean',
+    title: 'Include moonrise and moonset?',
+    description: 'Add moonrise and moonset data to the output.',
     default: true,
   },
   {
-    key: "includeWind",
-    type: "boolean",
-    title: "Include wind speed?",
-    description: "Add wind speed data to the output.",
+    key: 'includeWind',
+    type: 'boolean',
+    title: 'Include wind speed?',
+    description: 'Add wind speed data to the output.',
     default: true,
   },
   {
-    key: "includeHumidity",
-    type: "boolean",
-    title: "Include humidity?",
-    description: "Add humidity data to the output.",
+    key: 'includeHumidity',
+    type: 'boolean',
+    title: 'Include humidity?',
+    description: 'Add humidity data to the output.',
     default: true,
   },
   {
-    key: "enableSlashCommand",
-    type: "boolean",
-    title: "Enable slash command?",
+    key: 'enableSlashCommand',
+    type: 'boolean',
+    title: 'Enable slash command?',
     description: 'Enable the "Add current weather data" slash command.',
     default: true,
   },
   {
-    key: "enableRenderer",
-    type: "boolean",
-    title: "Enable Renderer?",
+    key: 'enableRenderer',
+    type: 'boolean',
+    title: 'Enable Renderer?',
     description:
       'Enable the ":addCurrentWeatherData" renderer to apply with templates.',
     default: true,
@@ -115,7 +115,7 @@ const parseQuery = (query: string) => {
     return;
   }
 
-  const [latitude, longitude] = query.split(",");
+  const [latitude, longitude] = query.split(',');
 
   // if (!latitude || !longitude) {
   //   return null;
@@ -123,17 +123,17 @@ const parseQuery = (query: string) => {
 
   if (!latitude) {
     return logseq.UI.showMsg(
-      "logseq-weather-plugin :: Could not parse latitude from block! query: " +
+      'logseq-weather-plugin :: Could not parse latitude from block! query: ' +
         query,
-      "error"
+      'error'
     );
   }
 
   if (!longitude) {
     return logseq.UI.showMsg(
-      "logseq-weather-plugin :: Could not parse longitude from block! query: " +
+      'logseq-weather-plugin :: Could not parse longitude from block! query: ' +
         query,
-      "error"
+      'error'
     );
   }
 
@@ -142,8 +142,8 @@ const parseQuery = (query: string) => {
 
 const toLocaleTimeString = (isoStr: string) =>
   new Date(isoStr).toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
+    hour: 'numeric',
+    minute: '2-digit',
   });
 
 interface WeatherResponse {
@@ -159,7 +159,7 @@ interface WeatherResponse {
 }
 
 const runPlugin = async (e: { uuid: string }) => {
-  const query = (await logseq.Editor.getBlock(e.uuid))?.content.split("\n")[0];
+  const query = (await logseq.Editor.getBlock(e.uuid))?.content.split('\n')[0];
 
   const coords =
     parseQuery(query || logseq.settings?.localCoordinates) ||
@@ -167,8 +167,8 @@ const runPlugin = async (e: { uuid: string }) => {
 
   if (!coords) {
     return logseq.UI.showMsg(
-      "logseq-weather-plugin :: Could not parse latitude and longitude from block!",
-      "error"
+      'logseq-weather-plugin :: Could not parse latitude and longitude from block!',
+      'error'
     );
   }
 
@@ -176,7 +176,7 @@ const runPlugin = async (e: { uuid: string }) => {
     const weatherResponse = await getWeatherData(coords);
 
     if (!weatherResponse) {
-      return logseq.UI.showMsg("logseq-weather-plugin :: No results!");
+      return logseq.UI.showMsg('logseq-weather-plugin :: No results!');
     }
 
     writeWeatherData(weatherResponse, e.uuid);
@@ -185,13 +185,13 @@ const runPlugin = async (e: { uuid: string }) => {
       await logseq.Editor.removeBlock(e.uuid);
     }
   } catch (err) {
-    console.error("logseq-weather-plugin :: Error: ", err);
+    console.error('logseq-weather-plugin :: Error: ', err);
   }
 };
 
 const getWeatherData = async ({ latitude, longitude }: Coordinates) => {
   try {
-    const units = logseq.settings?.units === "metric" ? "&metric=t" : "";
+    const units = logseq.settings?.units === 'metric' ? '&metric=t' : '';
 
     const res = await fetch(
       `https://endpoints.deno.dev/weather?lat=${latitude}&lon=${longitude}${units}`
@@ -232,9 +232,9 @@ const writeWeatherData = async (
     moonset
   )}`;
   const locationStr = location
-    .split(",")
+    .split(',')
     .map((s) => `[[${s.trim()}]]`)
-    .join(", ");
+    .join(', ');
 
   if (logseq.settings?.useSingleBlock) {
     let content = `[[Daily Weather]]\nforecast:: ${forecast}\ntemperature:: ${temperature}`;
@@ -302,7 +302,7 @@ const writeWeatherData = async (
 
     await logseq.Editor.insertBatchBlock(srcBlock, [
       {
-        content: "[[Daily Weather]]",
+        content: '[[Daily Weather]]',
         children,
       },
     ]);
@@ -310,21 +310,21 @@ const writeWeatherData = async (
 };
 
 const main = () => {
-  console.log("logseq-weather-plugin :: Loaded!");
+  console.log('logseq-weather-plugin :: Loaded!');
 
   logseq.useSettingsSchema(settings);
 
   logseq.Editor.registerBlockContextMenuItem(
-    "Add current weather data",
+    'Add current weather data',
     async (e) => {
-      console.log("logseq-weather-plugin :: Fetching results...");
+      console.log('logseq-weather-plugin :: Fetching results...');
       await runPlugin(e);
     }
   );
 
   if (logseq.settings?.enableSlashCommand) {
-    logseq.Editor.registerSlashCommand("Add current weather data", async () => {
-      console.log("logseq-weather-plugin :: Fetching results...");
+    logseq.Editor.registerSlashCommand('Add current weather data', async () => {
+      console.log('logseq-weather-plugin :: Fetching results...');
       const e = await logseq.Editor.getCurrentBlock();
 
       if (e) {
@@ -336,7 +336,7 @@ const main = () => {
   if (logseq.settings?.enableRenderer) {
     logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
       const [type] = payload.arguments;
-      if (type?.startsWith(":addCurrentWeatherData")) {
+      if (type?.startsWith(':addCurrentWeatherData')) {
         // don't run plugin if the renderer is defined inside of a template block
         if (!(await checkTemplate(payload.uuid))) {
           const e = { uuid: payload.uuid };
