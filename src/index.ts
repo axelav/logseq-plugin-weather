@@ -117,8 +117,24 @@ const parseQuery = (query: string) => {
 
   const [latitude, longitude] = query.split(",");
 
-  if (!latitude || !longitude) {
-    return null;
+  // if (!latitude || !longitude) {
+  //   return null;
+  // }
+
+  if (!latitude) {
+    return logseq.UI.showMsg(
+      "logseq-weather-plugin :: Could not parse latitude from block! query: " +
+        query,
+      "error"
+    );
+  }
+
+  if (!longitude) {
+    return logseq.UI.showMsg(
+      "logseq-weather-plugin :: Could not parse longitude from block! query: " +
+        query,
+      "error"
+    );
   }
 
   return { latitude: latitude.trim(), longitude: longitude.trim() };
@@ -145,7 +161,9 @@ interface WeatherResponse {
 const runPlugin = async (e: { uuid: string }) => {
   const query = (await logseq.Editor.getBlock(e.uuid))?.content.split("\n")[0];
 
-  const coords = parseQuery(query || logseq.settings?.localCoordinates);
+  const coords =
+    parseQuery(query || logseq.settings?.localCoordinates) ||
+    parseQuery(logseq.settings?.localCoordinates);
 
   if (!coords) {
     return logseq.UI.showMsg(
@@ -317,7 +335,8 @@ const main = () => {
 
   if (logseq.settings?.enableRenderer) {
     logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
-      if (payload.type == ":addCurrentWeatherData") {
+      const [type] = payload.arguments;
+      if (type?.startsWith(":addCurrentWeatherData")) {
         // don't run plugin if the renderer is defined inside of a template block
         if (!(await checkTemplate(payload.uuid))) {
           const e = { uuid: payload.uuid };
