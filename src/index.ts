@@ -117,24 +117,8 @@ const parseQuery = (query: string) => {
 
   const [latitude, longitude] = query.split(',');
 
-  // if (!latitude || !longitude) {
-  //   return null;
-  // }
-
-  if (!latitude) {
-    return logseq.UI.showMsg(
-      'logseq-weather-plugin :: Could not parse latitude from block! query: ' +
-        query,
-      'error'
-    );
-  }
-
-  if (!longitude) {
-    return logseq.UI.showMsg(
-      'logseq-weather-plugin :: Could not parse longitude from block! query: ' +
-        query,
-      'error'
-    );
+  if (!latitude || !longitude) {
+    return null;
   }
 
   return { latitude: latitude.trim(), longitude: longitude.trim() };
