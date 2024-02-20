@@ -82,7 +82,33 @@ let settings: SettingSchemaDesc[] = [
     description: 'Enable the "Add current weather data" slash command.',
     default: true,
   },
+  {
+    key: 'enableRenderer',
+    type: 'boolean',
+    title: 'Enable Renderer?',
+    description:
+      'Enable the ":addCurrentWeatherData" renderer to apply with templates.',
+    default: true,
+  },
 ]
+
+async function checkTemplate(uuid) {
+  //Credits to Alex for this implementation https://github.com/QWxleA
+  //is block(uuid) on a template?
+  try {
+    let block = await logseq.Editor.getBlock(uuid)
+    let checkTPL =
+      block.properties && block.properties.template != undefined ? true : false
+    let checkPRT =
+      block.parent != null && block.parent.id !== block.page.id ? true : false
+
+    if (checkTPL === false && checkPRT === false) return false
+    if (checkTPL === true) return true
+    return await checkTemplate(block.parent.id)
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const parseQuery = (query: string) => {
   if (!query.trim()) {
@@ -119,7 +145,9 @@ interface WeatherResponse {
 const runPlugin = async (e: { uuid: string }) => {
   const query = (await logseq.Editor.getBlock(e.uuid))?.content.split('\n')[0]
 
-  const coords = parseQuery(query || logseq.settings?.localCoordinates)
+  const coords =
+    parseQuery(query || logseq.settings?.localCoordinates) ||
+    parseQuery(logseq.settings?.localCoordinates)
 
   if (!coords) {
     return logseq.UI.showMsg(
@@ -285,6 +313,21 @@ const main = () => {
 
       if (e) {
         await runPlugin(e)
+      }
+    })
+  }
+
+  if (logseq.settings?.enableRenderer) {
+    logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
+      const [type] = payload.arguments
+      if (type?.startsWith(':addCurrentWeatherData')) {
+        // don't run plugin if the renderer is defined inside of a template block
+        if (!(await checkTemplate(payload.uuid))) {
+          const e = { uuid: payload.uuid }
+          if (e) {
+            await runPlugin(e)
+          }
+        }
       }
     })
   }
